@@ -128,8 +128,6 @@ Este módulo representa el **núcleo del motor de extracción estructurada** par
 4. **Flexibilidad para distintos tipos de nota médica**  
    El sistema no depende de una plantilla fija, sino de la lógica visual del documento, por lo que puede adaptarse a diferentes tipos de notas: evolución, alta, triage, interconsulta, enfermería, etc.
 
----
-
 #### 🔠 Uso de la librería `Levenshtein`
 
 En este módulo se emplea `Levenshtein` para calcular la **distancia de edición** entre cadenas de texto, lo cual es crucial cuando se necesita:
@@ -144,17 +142,44 @@ Esto permite una **segmentación robusta y tolerante a errores** del contenido, 
 
 ### 📕 `main.py`
 
-Este script es el **punto de entrada del proyecto**. Ejecuta el proceso completo desde la lectura del PDF hasta la generación del JSON final con los datos clínicos.
+Este script actúa como el **punto de entrada principal** del proyecto. Es el encargado de orquestar todo el flujo de trabajo, desde la lectura del PDF hasta la construcción final de un archivo JSON estructurado con los datos clínicos extraídos.
 
-#### Funciones:
-- `df_to_dict(df)`: Convierte un `DataFrame` en lista de diccionarios para exportación.
-- `main()`: Orquesta todo el flujo:
-  - Carga el PDF.
-  - Extrae encabezado y pie de página.
-  - Extrae secciones clínicas.
-  - Construye el JSON estructurado.
+Su principal objetivo es integrar todos los módulos del sistema (`extract_pdf.py` y `header_footer_to_df.py`), ejecutar sus funciones clave y generar una salida coherente, útil y estandarizada que pueda ser utilizada para visualización, análisis o carga en una base de datos clínica.
 
 ---
+
+#### ✅ Funciones principales:
+
+- `df_to_dict(df)`  
+  Convierte un `DataFrame` en una lista de diccionarios, lista para serializarse como JSON. También reemplaza espacios en los nombres de las columnas por guiones bajos para evitar errores.
+
+- `main()`  
+  Ejecuta el flujo completo del sistema en los siguientes pasos:
+
+  1. **Carga del PDF**  
+     Se inicializa la clase `PDF` con la ruta definida al principio del script. Esto permite cargar todo el contenido posicional del PDF.
+
+  2. **Extracción del encabezado y pie de página**  
+     Utiliza la función `extract_header_footer_text()` para obtener los textos de las secciones administrativa y médica. Luego, los datos se estructuran mediante funciones del módulo `header_footer_to_df.py`:
+     - `get_head()` para información administrativa.
+     - `get_patient_data()` para información del paciente.
+     - `get_medical_data()` para datos médicos y del profesional de salud.
+
+  3. **Organización de datos individuales**  
+     Se crean tres diccionarios:  
+     - `informacion_nota`: contiene número de nota, tipo, expediente, HIM, fechas clave y hospital.  
+     - `informacion_paciente`: contiene los datos del paciente como nombre, apellidos, fecha de nacimiento, edad y sexo.  
+     - `informacion_medico`: contiene datos del médico firmante como nombre completo, cédula profesional, fecha de creación de la nota, etc.
+
+  4. **Extracción de secciones clínicas**  
+     Se itera sobre todas las secciones detectadas en el PDF (excepto encabezado y pie) para extraer:
+     - Tablas con información clínica (`get_table`)
+     - Texto libre o estructurado (`get_subsections`)  
+     Cada sección se almacena en el diccionario `note_sections`.
+
+  5. **Construcción del JSON final**  
+     Se crea una estructura JSON con todos los datos organizados por categorías:
+     - Información de la nota (`
 
 ### Configuración de la ruta del PDF
 
