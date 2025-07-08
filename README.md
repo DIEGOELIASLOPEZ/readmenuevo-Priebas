@@ -16,7 +16,7 @@
    - [📘 extract_pdf.py](#-extract_pdfpy)
    - [📕 main.py](#-mainpy)
 4. [🚀 Configuración de la ruta del PDF](#-Configuración-de-la-ruta-del-pdf)
-5. [📜 Ejemplo de salida](#ejemplo-de-salida)
+5. [Ejemplo de salida](#ejemplo-de-salida)
 
 ---
 ## 🧾 Información del Proyecto
@@ -194,7 +194,7 @@ Si deseas utilizar una ruta diferente, modifica la variable ruta_pdf según el s
     ruta_pdf = "C:/Users/Usuario/Escritorio/think-tank/data/archivo.pdf"  # Windows
     ruta_pdf = "/home/usuario/Escritorio/think-tank/data/archivo.pdf"  # Linux
 
-### 📜 Ejemplo de salida
+### Ejemplo de salida
 
 
 ```json
