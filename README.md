@@ -181,7 +181,7 @@ Su principal objetivo es integrar todos los módulos del sistema (`extract_pdf.p
      Se crea una estructura JSON con todos los datos organizados por categorías:
      - Información de la nota (`
 
-### Configuración de la ruta del PDF
+### 🚀 Configuración de la ruta del PDF
 
 Antes de ejecutar el script, es fundamental configurar correctamente la ruta del archivo PDF en la variable global `ruta_pdf`. Una vez que la ruta esté definida, el programa estará listo para ejecutarse.
 
@@ -194,7 +194,7 @@ Si deseas utilizar una ruta diferente, modifica la variable ruta_pdf según el s
     ruta_pdf = "C:/Users/Usuario/Escritorio/think-tank/data/archivo.pdf"  # Windows
     ruta_pdf = "/home/usuario/Escritorio/think-tank/data/archivo.pdf"  # Linux
 
-# Ejemplo de Salida.
+### 📜 Ejemplo de salida
 
 ```json
 {
