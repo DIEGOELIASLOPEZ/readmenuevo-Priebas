@@ -16,8 +16,7 @@
    - [📘 extract_pdf.py](#-extract_pdfpy)
    - [📕 main.py](#-mainpy)
 4. [🚀 Configuración de la ruta del PDF](#-Configuración-de-la-ruta-del-pdf)
-5. [📜 Ejemplo de Salida](#-Ejemplo-de-Salida.)
-
+5. [📜 Ejemplo de salida](#ejemplo-de-salida)
 ---
 ## 🧾 Información del Proyecto
 
