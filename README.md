@@ -9,14 +9,14 @@
 ## 📑 Tabla de Contenidos
 *Haz clic en la sección que deseas consultar*
 
-1. [🧾 Información del Proyecto](#🧾-información-del-proyecto)
-2. [📋 Requisitos](#📋-requisitos)
-3. [📂 Archivos](#📂-archivos)
+1. [🧾 Información del Proyecto](#-información-del-proyecto)
+2. [📋 Requisitos](#-requisitos)
+3. [📂 Archivos](#-archivos)
    - [📗 header_footer_to_df.py](#-header_footer_to_dfpy)
    - [📘 extract_pdf.py](#-extract_pdfpy)
    - [📕 main.py](#-mainpy)
-4. [🚀 Configuración de la ruta del PDF](#Configuración de la ruta del PDF)
-5. [📜 Ejemplo de Salida](#📜-ejemplo-de-salida)
+4. [🚀 Configuración de la ruta del PDF](#-Configuración de la ruta del PDF)
+5. [📜 Ejemplo de Salida](#-ejemplo-de-salida)
 
 ---
 ## 🧾 Información del Proyecto
