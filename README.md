@@ -19,13 +19,27 @@
 5. [📜 Ejemplo de Salida](#📜-ejemplo-de-salida)
 
 ---
-
 ## 🧾 Información del Proyecto
 
-Este repositorio resuelve un problema común en hospitales: la extracción automatizada de datos clínicos desde archivos PDF que no siguen un formato fijo.
+Este repositorio resuelve una necesidad específica del **Hospital Infantil de México Federico Gómez**: la **extracción automatizada de información clínica contenida en archivos PDF** generados por su sistema interno. Estos documentos siguen un formato y contienen datos médicos relevantes que actualmente no pueden ser aprovechados fácilmente para su análisis o visualización.
 
-Está diseñado para transformar documentos médicos en papel o en PDF (escaneos o generados digitalmente) en datos estructurados y útiles, que puedan analizarse, visualizarse o integrarse en otros sistemas como bases de datos o expedientes clínicos electrónicos.
+El principal objetivo de este proyecto es **transformar las notas clínicas médicas en formato PDF en estructuras de datos limpias, organizadas y utilizables**. Esto permite que la información contenida en estos documentos pueda ser:
 
+- **Consultada rápidamente** por usuarios clínicos o administrativos.
+- **Visualizada gráficamente** en paneles o tableros informativos.
+- **Analizada de forma automatizada** con herramientas estadísticas o de inteligencia artificial.
+- **Integrada en otras plataformas** como expedientes clínicos electrónicos, sistemas hospitalarios o páginas web.
+
+A través del uso de técnicas de procesamiento de texto posicional (mediante `pdfplumber`) y lógica de segmentación basada en el diseño visual del documento, el sistema es capaz de:
+
+- Detectar secciones clave incluidas en los expedientes como: “Signos Vitales”, “Diagnóstico”, “Órdenes Médicas”, “Evolución”, entre otras.
+- Extraer tanto **texto libre** (narrativo, descripciones clínicas) como **tablas de datos** (por ejemplo, mediciones biométricas o medicamentos prescritos).
+- Organizar esta información en un formato JSON estructurado, validado y estandarizado.
+
+Además, se busca que la solución sea:
+
+- **Reproducible**: cualquier desarrollador podrá ejecutarlo fácilmente con solo instalar las dependencias.
+- **Dinámico**: el código está modularizado para facilitar la extracción de las distintas notas clínicas existentes del Hospital.
 ---
 
 ## 📋 Requisitos
@@ -57,40 +71,74 @@ Estas vienen instaladas por defecto con Python:
 
 ## 📂 Archivos
 
-### 📗 `header_footer_to_df.py`
+### 🧾 `header_footer_to_df.py`
 
-Se encarga de **extraer los datos administrativos** del encabezado y pie de página de las notas clínicas.
+Este módulo se encarga de **extraer y estructurar los datos generales** que aparecen en el encabezado y pie de página de las notas médicas extraídas de un PDF. Su objetivo principal es convertir esa información desorganizada en un `DataFrame` limpio, estructurado y listo para su posterior análisis o integración.
 
-#### Funciones principales:
-- `get_head()`: Número de nota, expediente, tipo, HIM.
-- `get_patient_data()`: Nombres, apellidos (incluyendo partículas), edad, sexo, fecha de nacimiento.
-- `get_medical_data()`: Fechas de ingreso, alta, creación de nota, médico firmante y cédula.
-- `convert_to_df()`: Convierte todos los datos extraídos en un `DataFrame` organizado.
+Incluye funciones que permiten detectar automáticamente:
+
+- El nombre completo del paciente, separando correctamente los apellidos, incluso si son compuestos o contienen partículas como “de la”, “del”, “y”, etc.
+- Fecha de nacimiento, sexo y edad del paciente.
+- Número de expediente, número de nota, tipo de nota y código HIM.
+- Fechas clave: ingreso, alta y creación de la nota médica.
+- Nombre completo y cédula profesional del médico firmante.
+- Nombre del hospital donde se generó la nota.
+
+#### 🔧 Funciones principales
+
+- `get_head(text, df)`  
+  Extrae información administrativa como el número de nota, tipo de nota, número de expediente y código HIM.
+
+- `get_patient_data(text, df)`  
+  Detecta y separa los apellidos paterno y materno, así como los nombres del paciente. También obtiene su fecha de nacimiento, sexo y edad. Es compatible con nombres largos o con partículas compuestas.
+
+- `get_medical_data(text, df)`  
+  Extrae datos del contexto médico: fechas de ingreso, alta y creación de la nota, así como el nombre completo del médico firmante y su cédula profesional.
+
+- `convert_to_df(text_list)`  
+  Función integradora que toma una lista de líneas de texto del encabezado/pie y devuelve un `DataFrame` unificado con toda la información anterior de forma estructurada.
+
 
 ---
 
 ### 📘 `extract_pdf.py`
 
-Este módulo es el **motor de extracción estructurada**. A partir de texto posicionado y características visuales del PDF, convierte el documento en una estructura de datos organizada.
 
-#### Funcionalidad principal:
-1. **Lectura posicional** usando `pdfplumber`.
-2. **Segmentación por secciones** mediante lógica de formato (títulos, mayúsculas, alineación).
-3. **Extracción de contenido** por bloques, texto plano o tablas.
-4. **Flexibilidad** para distintos tipos de notas (evolución, alta, interconsulta, etc.).
+Este módulo representa el **núcleo del motor de extracción estructurada** para documentos PDF médicos. Se basa en una clase principal (`PDF`) que encapsula toda la lógica necesaria para interpretar el contenido posicional de las notas clínicas, con un enfoque adaptable a documentos complejos o mal estructurados.
 
-#### Uso de `Levenshtein`:
-Permite identificar secciones o etiquetas mal escritas o variables. Por ejemplo:
-- "Diagnóstico" vs "Dx Activo"
-- "Estudios" vs "Laboratorio/Imagen"
+#### ✅ Funcionalidad principal
 
-Así, el motor es **tolerante a errores** y adaptable a múltiples plantillas de hospital.
+`extract_pdf.py` convierte un archivo PDF en un modelo estructurado del contenido médico mediante las siguientes etapas:
 
-#### Métodos clave:
-- `extract_header_footer_text()`
-- `get_table(section_name)`
-- `get_subsections(section_name)`
-- `extract_blocks_from_text()`
+1. **Lectura posicional del PDF**  
+   Utiliza la librería `pdfplumber` para leer texto, posiciones (x, y), tamaños de fuente y otras características visuales de cada palabra. Esta lectura se guarda en un `DataFrame` que permite analizar el contenido línea por línea.
+
+2. **Segmentación por secciones**  
+   Emplea patrones repetitivos del layout médico (como títulos en mayúsculas, alineaciones específicas o palabras clave) para identificar y clasificar secciones del documento, por ejemplo:  
+   - Encabezado (header)  
+   - Pie de página (footer)  
+   - Cuerpo clínico (e.g., "Signos Vitales", "Diagnóstico", "Evolución")
+
+3. **Extracción inteligente de contenido**  
+   A través de sus métodos, permite:
+   - **Obtener texto estructurado** por sección (`get_subsections`)
+   - **Extraer tablas** a partir de regiones con datos tabulares (`get_table`)
+   - **Detectar bloques clínicos** dentro del texto continuo (`extract_blocks_from_text`), diferenciando párrafos, indicaciones o ítems por su espaciado vertical o estilo tipográfico.
+
+4. **Flexibilidad para distintos tipos de nota médica**  
+   El sistema no depende de una plantilla fija, sino de la lógica visual del documento, por lo que puede adaptarse a diferentes tipos de notas: evolución, alta, triage, interconsulta, enfermería, etc.
+
+---
+
+#### 🔠 Uso de la librería `Levenshtein`
+
+En este módulo se emplea `Levenshtein` para calcular la **distancia de edición** entre cadenas de texto, lo cual es crucial cuando se necesita:
+
+- Identificar **secciones clínicas aunque estén mal escritas**, abreviadas o con errores tipográficos (por ejemplo, "Dx Activo" vs. "Diagnósticos Activos")
+- Detectar **similitudes aproximadas** en encabezados entre distintos PDFs médicos, que pueden variar según el sistema o plantilla utilizada.
+
+Esto permite una **segmentación robusta y tolerante a errores** del contenido, sin depender de coincidencias exactas. Gracias a esto, el motor puede identificar correctamente secciones incluso en documentos con formatos inconsistentes o escaneos defectuosos.
+
 
 ---
 
