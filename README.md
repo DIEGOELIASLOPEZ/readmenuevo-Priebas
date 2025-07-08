@@ -2,7 +2,8 @@
 
 **Extracción, procesamiento y almacenamiento estructurado de datos médicos desde un archivo PDF.**
 
-![](https://www.iimas.unam.mx/wp-content/uploads/2023/11/Logo-pagina-ok.png)
+![Portada Think-Tank](https://github.com/PLN-disca-iimas/think-tank/blob/main/Informacion/PORTADA2.jpg?raw=true)
+
 
 ---
 
